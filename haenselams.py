@@ -138,10 +138,10 @@ def make_regression(x_train, y_train, x_test, y_test, model, model_name, verbose
     model.fit(x_train,y_train)
     
     y_predict=model.predict(x_train)
-    train_error = mean_squared_error(y_train, y_predict, squared=False)
+    train_error = mean_squared_error(y_train, y_predict)
     
     y_predict =model.predict(x_test)
-    test_error = mean_squared_error(y_test, y_predict, squared=False)
+    test_error = mean_squared_error(y_test, y_predict)
     
     y_predict=model.predict(x_train)
     r2 = r2_score(y_train, y_predict)
@@ -228,7 +228,16 @@ plt.show()
 
 pred_df.drop(columns=['feature_set_2', 'Model_with_Data_set'], inplace=True)
 
-#Model Evaluation
+#Model Evaluation - Highest R Squared, Min test error, Min train error,
+
+#Highest R Squared
+print(pred_df.sort_values(by = "R2", ascending = False).head(5))
+
+#min test error 
+print(pred_df.sort_values(by = "Test Error", ascending = True).head(5))
+
+#min train error 
+print(pred_df.sort_values(by = "Train Error", ascending = True).head(5))
 
 #Grid Search in Random Forest
 
