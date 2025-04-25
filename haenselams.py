@@ -39,17 +39,52 @@ from sklearn.ensemble import RandomForestRegressor
 
 #Read in the sample data
 df = pd.read_csv("sample.csv")
-df.head(5)
-df.info()
+print(df.head(5))
+print(df.info())
 
 #Data Manipulation
-df["loc1"].value_counts()
+print(df["loc1"].value_counts())
+#drop all the S & T entries
 df = df[(df["loc1"].str.contains("S") == False) & (df["loc1"].str.contains("T") == False)]
-df.shape 
+print(df.shape) #(9998, 8)
+#Convert the loc2 and loc 1 columns to numeric, rather than object, if it can't it gets replaced with NaN
 df["loc2"] = pd.to_numeric(df["loc2"], errors='coerce')
 df["loc1"] = pd.to_numeric(df["loc1"], errors='coerce')
+#Can see changes to numeric values here 
+print(df.info())
+#drops all NaN values or missing values
 df.dropna(inplace = True)
-df.shape
+print(df.shape) # (9993, 8) -> dropped 5 rows 
+
 
 #Data Type Changing 
+#create one hot encoding of the days of the week variable 
 dow_dummies = pd.get_dummies(df.dow)
+dow_dummies.replace({False: 0, True: 1}, inplace=True)
+
+print(dow_dummies.head())
+df2 = df.copy(deep=True)
+df2.drop(columns = "dow", inplace = True)
+result = df2.join(dow_dummies)
+print(result.head())
+
+#map to the days of the week and replace column dow
+days_of_week = {'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6, 'Sun': 7}
+df['dow'] = df['dow'].map(days_of_week)
+print(df.head())
+
+#Checking Outliers and Correlations 
+from pandas.plotting import scatter_matrix
+
+# Suppress the output of the scatter_matrix function, a way to visualize the relationships between multiple variables in a dataset
+_ = scatter_matrix(result.iloc[:,0:7], figsize=(12, 8))
+
+print(pd.DataFrame(abs(result.corr()["price"])).sort_values(by = "price", ascending = False)[1::])
+print(result.drop(columns = "loc2", inplace = True))
+print(result.iloc[:,0:6])
+
+import matplotlib.pyplot as plt 
+print(result.iloc[:,0:6].hist(bins=50, figsize=(20,15)))
+plt.show()
+
+print(result.iloc[:,0:6].describe())
