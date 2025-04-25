@@ -79,12 +79,25 @@ from pandas.plotting import scatter_matrix
 # Suppress the output of the scatter_matrix function, a way to visualize the relationships between multiple variables in a dataset
 _ = scatter_matrix(result.iloc[:,0:7], figsize=(12, 8))
 
+#sorting the data and cleaning up the data more and splitting the data too
 print(pd.DataFrame(abs(result.corr()["price"])).sort_values(by = "price", ascending = False)[1::])
 print(result.drop(columns = "loc2", inplace = True))
 print(result.iloc[:,0:6])
 
+#placing the data into bins for a histogram to analyze
 import matplotlib.pyplot as plt 
 print(result.iloc[:,0:6].hist(bins=50, figsize=(20,15)))
 plt.show()
 
 print(result.iloc[:,0:6].describe())
+
+#sort and describe value counts and have a cut off too 
+print(result.iloc[:,0:6].sort_values(by = "para1", ascending = False).head(5))
+
+print(result["para1"].value_counts())
+result = result[result["para1"] < 10]
+
+#Feature Selection
+#initialize new array 
+five_best = []
+df_5 = pd.DataFrame(result.corr()["price"]).sort_values(by = "price", ascending = False)
