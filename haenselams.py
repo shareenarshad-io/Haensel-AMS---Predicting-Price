@@ -185,8 +185,48 @@ for feature_set_name in feature_sets.keys():
         pred_dict["Test Error"].append(test_error)
         pred_dict["R2"].append(r2)
 
+pred_df = pd.DataFrame(pred_dict)
+print(pred_df.head(5))
+
+pred_df["feature_set_2"] = pred_df["feature_set"].apply(lambda x: x.split('_')[0])
+
+pred_df["Model_with_Data_set"] = pred_df['regression_model'] +"_"+ pred_df["feature_set_2"]
+
+df_barh = pred_df[["Train Error","Test Error", "R2", "Model_with_Data_set" ]]
+
+df_train_error = df_barh[['Model_with_Data_set', 'Train Error']]
+df_test_error = df_barh[['Model_with_Data_set', 'Test Error']]
+
+# Create a figure and subplots
+fig, (ax2, ax3, ax4) = plt.subplots(1, 3, figsize=(14, 6))
 
 
+# Create the first graph
+df_barh.plot(kind='barh', x='Model_with_Data_set', y='R2', color='red', ax=ax2, legend=False)
+ax2.set_xlabel('R Squared')
+ax2.set_ylabel('Model')
+ax2.set_title('R-squared')
+
+# Create the second graph
+df_train_error.plot(kind='barh', x='Model_with_Data_set', y='Train Error', color='blue', ax=ax3, legend=False)
+ax3.set_xlabel('Train Error')
+ax3.set_ylabel('Model')
+ax3.set_title('Train Error')
+
+
+# Create the second graph
+df_test_error.plot(kind='barh', x='Model_with_Data_set', y='Test Error', color='green', ax=ax4, legend=False)
+ax4.set_xlabel('Test Error')
+ax4.set_ylabel('Model')
+ax4.set_title('Test Error')
+
+# Fit the figure
+plt.tight_layout()
+
+# Show the figure
+plt.show()
+
+pred_df.drop(columns=['feature_set_2', 'Model_with_Data_set'], inplace=True)
 
 #Model Evaluation
 
